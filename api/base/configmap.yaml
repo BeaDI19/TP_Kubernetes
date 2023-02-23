@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api
+data:
+  db_database: changeme
+  db_host: postgres
+  db_password: changeme
+  db_username: postgres

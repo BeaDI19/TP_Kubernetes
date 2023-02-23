@@ -1,0 +1,48 @@
+version: '3.5'
+services:
+  postgres:
+    container_name: postgres-container
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_DB: ${DB_DATABASE:-changeme}
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped 
+  
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  api:
+    container_name: api-container
+    image: beadi19/kub-api:1.0
+    ports:
+      - 3000
+    networks:
+      - postgres
+    depends_on: 
+      - postgres 
+    environment:
+      DB_HOST: postgres-container
+      DB_USERNAME: 'YOUR_POSTGRES_USERNAME'
+      DB_PASSWORD: 'YOUR_POSTGRES_PASSWORD'
+      DB_DATABASE: 'YOUR_POSTGRES_DATABASE'
+
+networks:
+  postgres:
+    driver: bridge
